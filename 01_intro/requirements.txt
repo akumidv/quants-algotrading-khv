@@ -1,0 +1,14 @@
+pandas
+pyarrow
+seaborn
+backtrader
+backtrader_plotting
+hyperopt
+pandas_datareader
+matplotlib==3.2.2
+yfinance
+plotly
+#TA-Lib-prebuild
+#TA-Lib-binary
+#talib-binary
+ta-lib
