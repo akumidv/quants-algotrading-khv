@@ -91,9 +91,8 @@ def run(request):
         """
 
     try:
-        request_json = request
-        if not request_json or request_json.get('exchanges') is None or not (isinstance(request_json['exchanges'], list) or
-                                                                       isinstance(request_json['exchanges'], str)):
+        request_json = request.get_json(force=True)
+        if not request_json or request_json.get('exchange') is None or isinstance(request_json['exchange'], str):
             return error_handler(
                 {'error': 1,
                  'message': f'Error request, do not have exchanges in request json: {request_json}'})
