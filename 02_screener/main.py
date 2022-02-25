@@ -75,14 +75,6 @@ def process(exchange='NYSE', req_datetime=None):
                                   'message': f"{last_datetime} Exchange *{exchange}*, hasn't signals for screener '{screener_code}',\n"
                                              f"Eod data length: {data_length}, signals len: {len(res_tickers)}\n"})
             continue
-        # res_send = ui.send_signals()
-        # if res_send.get('error', True) is not None or res_send.get('data', None) is None:
-        #     return error_handler(res_send)
-        # if not res_send['data']:
-        #     return error_handler({'error': None,
-        #                           'message': f'Error to send signals for exchange *{exchange}*,\ndf_len:{data_length}, number tickers {uniq_tickers}, signals len{len(res_tickers)}\n'
-        #                                      f'\nsend_res{res_send["message"]}'})
-
 
     return {'error': None, 'message': f'Signals: {screeners_res}'}
 
@@ -105,10 +97,7 @@ def run(request):
             return error_handler(
                 {'error': 1,
                  'message': f'Error request, do not have exchanges in request json: {request_json}'})
-        exchanges = [request_json['exchanges']] if isinstance(request_json['exchanges'], str) else request_json[
-            'exchanges']
-        request_datetime = request_json.get('datetime', None)
-        res = process(exchanges, req_datetime=request_datetime)
+        res = process(request_json['exchange'], req_datetime= request_json.get('datetime', None))
     except Exception as err:
         print('[ERROR] ', err)
         tb = traceback.format_exc()
@@ -116,21 +105,3 @@ def run(request):
         return error_handler({'error': 3, 'message': f'There server-side exception error'})
     return res
 
-
-if __name__ == '__main__':
-    class flask_request():
-        def get_json(self, force=True):
-            # return {"exchanges": "NASDAQ", "datetime": "2021-11-04"} #, "mode": "development",, "screeners": {"ath": {'deep': 200}}}
-            return {"exchanges": ["NYSE", "NASDAQ"], "datetime": "2021-11-08"} #, "mode": "development","screeners": {"gc01": {'ma_long': 20,'ma_middle': 5}}} #, "screeners": {"ath": {'deep': 200}}}
-            # return {"exchanges": "NYSE", "mode": "development", "date": "2021-11-04"}#, "screeners": {"ath": {'deep': 200}}}
-            # return {"exchanges": "NYSE", "datetime": "2021-11-03"}
-            # return {"exchanges": "NYSE", "timeframe": "1d", "mode": "development", "date": "2021-11-04",
-            #         "screeners": {"gc01": {'ma_long': 20, 'ma_middle': 5}}}
-            return {"exchanges": "BINANCE", "timeframe": "1h", "mode": "development"} #"datetime": "2021-11-04T12:00:00+00:00",
-                    # "screeners": {"gc01": {'ma_long': 20, 'ma_middle': 5}}}
-            # return {"exchanges": "BINANCE", "mode": "test", "date": "2021-10-18", "screeners": {"ttc01": None}}
-
-
-    request = flask_request()
-    res = run(request)
-    print('############# Main res:\n', res)
