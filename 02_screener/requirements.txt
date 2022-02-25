@@ -1,0 +1,18 @@
+# Function dependencies, for example:
+# package>=version
+google-api-python-client
+google-cloud-firestore
+google-cloud-storage
+requests
+pandas
+
+#bokeh
+
+# development mode
+#pytest
+#pyarrow # To save data
+#requests-cache
+#psutil
+
+
+

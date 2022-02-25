@@ -1,0 +1,4 @@
+*.ipynb
+.gitignore
+rest-api_3.http
+README.md

@@ -1,0 +1,11 @@
+/temp/
+/.env/
+/.idea/
+/examples/
+
+gcloud-key.json
+gcloud-key-ak.json
+**/__pycache__/
+*.ftr
+*.sqlite
+
