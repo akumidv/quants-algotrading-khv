@@ -1,0 +1,37 @@
+//@version=5
+strategy("Bollinger Bands Strategy", overlay=true)
+
+length = input.int(20, 'Len SMA', minval=1)
+rsiLength = input.int(14, 'Len RSI', minval=1)
+mult = input.float(2.0, 'Mult', minval=0.001, maxval=50)
+source = close
+basis = ta.sma(source, length)
+
+dev = mult * ta.stdev(source, length)
+upper = basis + dev
+lower = basis - dev
+rsi = ta.rsi(source, rsiLength)
+
+
+plot(basis, "Basis", color=#FF6D00)
+p1 = plot(upper, "Upper", color=#2962FF)
+p2 = plot(lower, "Lower", color=#2962FF)
+fill(p1, p2, title = "Background", color=color.rgb(33, 150, 243, 95))
+
+
+isLong = rsi > 25 and source <= lower and strategy.position_size == 0
+isExit = rsi > 70 and source > basis and strategy.position_size != 0
+strategy.entry("BBandLE", strategy.long, when=isLong, comment="BBandLE")
+strategy.close(id="BBandLE",  when=isExit, comment="BBandLE Exit")
+
+
+// Another version
+// if (ta.crossover(source, lower))
+// 	strategy.entry("BBandLE", strategy.long, stop=lower, oca_name="BollingerBands", oca_type=strategy.oca.cancel, comment="BBandLE")
+// else
+// 	strategy.cancel(id="BBandLE")
+// if (ta.crossunder(source, upper)  && rsi > 70)
+// 	strategy.entry("BBandSE", strategy.short, stop=upper, oca_name="BollingerBands", oca_type=strategy.oca.cancel, comment="BBandSE")
+// else
+// 	strategy.cancel(id="BBandSE")
+//plot(strategy.equity, title="equity", color=color.red, linewidth=2, style=plot.style_areabr)

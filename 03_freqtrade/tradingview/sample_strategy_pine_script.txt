@@ -1,0 +1,51 @@
+//@version=5
+strategy("TEMA + Bollinger Bands Strategy", overlay=true)
+
+length = input.int(20, 'BB Len', minval=1)
+temaLength = input.int(9, 'TEMA Len', minval=1)
+rsiLength = input.int(14, 'Len RSI', minval=1)
+mult = input.float(2.0, 'Mult', minval=0.001, maxval=50)
+source = close
+sma1=ta.sma(source, temaLength)
+sma2=ta.sma(sma1, temaLength)
+tema=ta.sma(sma2, temaLength)
+
+basis = ta.sma(source, length)
+dev = mult * ta.stdev(source, length)
+upper = basis + dev
+lower = basis - dev
+rsi = ta.rsi(source, rsiLength)
+
+
+var isCrossed30 = rsi > 30
+var isCrossed70 = rsi > 70
+if rsi > 70 and rsi[1] <= 70
+    isCrossed30 := false
+    isCrossed70 := true
+else if rsi > 30 and rsi[1] <= 30
+    isCrossed30 := true
+    isCrossed70 := false
+else if rsi <= 30
+    isCrossed30 := false
+    isCrossed70 := false
+    
+isLong = isCrossed30 and tema <= basis and tema > tema[1] 
+isLongExit = isCrossed70 and tema > basis and tema < tema[1]
+
+
+isShort = isCrossed70 and tema > basis and tema < tema[1] 
+isShortExit = isCrossed30 and tema <= basis and tema > tema[1]
+
+
+strategy.entry("BBandLE", strategy.long, when=isLong, comment="BBRSI_L")
+strategy.close(id="BBandLE",  when=isLongExit or isShort, comment="BBRSI_L Exit")
+
+
+strategy.entry("BBandSE", strategy.short, when=isShort, comment="BBRSI_S")
+strategy.close(id="BBandSE",  when=isShortExit or isLong, comment="BBRSI_S Exit")
+
+plot(tema, 'TEMA',  linewidth=2)
+plot(basis, "Basis", color=#FF6D00)
+p1 = plot(upper, "Upper", color=#2962FF)
+p2 = plot(lower, "Lower", color=#2962FF)
+fill(p1, p2, title = "Background", color=color.rgb(33, 150, 243, 95))
